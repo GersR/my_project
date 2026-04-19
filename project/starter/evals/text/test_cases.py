@@ -16,6 +16,8 @@ RUNNING EVALS:
 """
 
 import sys
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 from typing import List, Any
 
@@ -37,6 +39,9 @@ from utils import create_repeated_cases, get_test_data_path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from evaluators import TextModerationCheck
+# Get EVAL_NUM_REPEATS parameter from env
+load_dotenv()
+EVAL_NUM_REPEATS=int(os.getenv("EVAL_NUM_REPEATS"))
 
 # Get the models for evaluation
 judge_model, judge_settings = get_judge_model()
@@ -91,15 +96,15 @@ cases: List[Case[List[TextInput], TextModerationResult, Any]] = [
         evaluators=(
             # Check that no safety flags are raised for professional text
             TextModerationCheck(
-                expected_pii=...,  # TODO
-                expected_unfriendly=...,  # TODO
-                expected_unprofessional=...,  # TODO
+                expected_pii=False,  # TODO
+                expected_unfriendly=False,  # TODO
+                expected_unprofessional=False,  # TODO
             ),
             # Use judge model to evaluate if the rationale makes sense
             LLMJudge(
-                model=...,  # TODO: add the model to be used as judge (judge_model)
-                rubric=...,  # TODO: add a rubric that checks the rationale explains why the text is professional and friendly.
-                include_input=..., # TODO: in this case it is probably useful to include the input text for context, so set this to True
+                model=judge_model,  # TODO: add the model to be used as judge (judge_model)
+                rubric="The rationale should explain why the tone is unprofessional, citing specific problematic phrases",  # TODO: add a rubric that checks the rationale explains why the text is professional and friendly.
+                include_input=True, # TODO: in this case it is probably useful to include the input text for context, so set this to True
             ),
         ),
     ),
@@ -132,7 +137,7 @@ cases: List[Case[List[TextInput], TextModerationResult, Any]] = [
             ),
             LLMJudge(
                 model=judge_model,
-                rubric="The rationale should explain why the tone is unfriendly and unprofessional, citing specific problematic phrases",
+                rubric="The rationale should explain why the tone is unfriendly, citing specific problematic phrases",
                 include_input=True,
             ),
         ),
@@ -148,7 +153,7 @@ text_dataset = Dataset[List[TextInput], TextModerationResult, Any](\
     # repeated EVAL_NUM_REPEATS times (as defined in .env). This helps measure consistency of the model under test
     # and reduces the variance of the measurements.
     # HINT: you need to pass cases as the argument to create_repeated_cases
-    cases=...,
+    cases=create_repeated_cases(cases, EVAL_NUM_REPEATS),
     evaluators=[
         # Global evaluators that apply to all test cases
         IsInstance(type_name="TextModerationResult"),  # Check correct return type
@@ -177,7 +182,7 @@ async def main():
     # TODO: call await text_dataset.evaluate() with the appropriate parameters to enable retries
     # HINT: you need to pass run_text_moderation as the function to test,
     # and both retry_task and retry_evaluators should be set to retry_config
-    report = ...  # TODO
+    report = await text_dataset.evaluate(run_text_moderation, retry_task=retry_config, retry_evaluators=retry_config)  # TODO
 
     # Print results
     report.print(include_input=True, include_output=True, include_durations=False)

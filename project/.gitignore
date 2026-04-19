@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Data / models / outputs
+data/
+datasets/
+models/
+outputs/
+artifacts/
+*.h5
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.onnx
+*.parquet
+*.csv
+
+# Logs
+*.log
