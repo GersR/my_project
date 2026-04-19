@@ -85,7 +85,7 @@ cases: List[Case[List[ImageInput], ImageModerationResult, Any]] = [
         #    issues (blurry, pixelated, poor exposure, etc.)
         evaluators=(
             ImageModerationCheck(
-                expected_pii=False,  # TODO
+                expected_pii=True,  # TODO
                 expected_disturbing=False, # TODO
                 expected_low_quality=True, # TODO
             ),

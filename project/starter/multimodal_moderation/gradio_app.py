@@ -271,7 +271,8 @@ class ChatSessionWithTracing:
 
                         # TODO: set an attribute "feedback" in the tracing span with the feedback message
                         # HINT: use span.set_attribute with "feedback" as the key and feedback as the value
-                        span.set_attribute("feedback", feedback)
+                        with tracer.start_as_current_span("feedback") as feedback_span:
+                            feedback_span.set_attribute("feedback", feedback)
 
                         return response, past_messages, feedback
 

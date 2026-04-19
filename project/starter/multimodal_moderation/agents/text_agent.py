@@ -25,7 +25,7 @@ Detect if:
 </instructions>
 
 <output>
-Provide a detailed rationale for your choices as well as a confidence score between 0 and 1 on your assessment.
+Provide values for the boolean flags: contains_pii, is_unfriendly and is_unprofessional. 
 </output>
 """
 
